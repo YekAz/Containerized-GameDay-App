@@ -38,3 +38,74 @@ Containerized-GameDay-App/
 # Setup Instructions
 ## Clone the Repository
 
+`git clone https://github.com/ifeanyiro9/containerized-sports-api.git`
+
+## Change directory into the clones repo
+
+`cd containerized-sports-api`
+
+## Create ECR Repo
+
+`aws ecr create-repository --repository-name sports-api --region us-east-1`
+
+## Authenticate and login to ECR
+
+`aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com`
+
+## Build image
+
+`docker build --platform linux/amd64 -t sports-api .`
+
+## Tag Image
+
+`docker tag sports-api:latest <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-api-latest`
+
+## Push Image to ECR repository
+
+`docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-api-latest`
+
+# Set Up ECS Cluster with Fargate
+
+1. Create an ECS Cluster:
+* Go to the ECS Console → Clusters → Create Cluster
+* Name your Cluster (sports-api-cluster)
+* For Infrastructure, select Fargate, then create Cluster
+
+2. Create a Task Definition:
+* Go to Task Definitions → Create New Task Definition
+* Name your task definition (sports-api-task)
+* For Infrastructure, select Fargate
+* Add the container:
+    * Name your container (sports-api-container)
+    * Image URI: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/sports-api:sports-api-latest
+    * Container Port: 8080
+    * Protocol: TCP
+    * Port Name: Leave Blank
+    * App Protocol: HTTP
+* Define Environment Variables:
+    * Key: SPORTS_API_KEY
+    * Value: <YOUR_SPORTSDATA.IO_API_KEY>
+    * Create task definition
+
+3. Run the Service with an ALB
+* Go to Clusters → Select Cluster → Service → Create.
+* Capacity provider: Fargate
+* Select Deployment configuration family (sports-api-task)
+* Name your service (sports-api-service)
+* Desired tasks: 2
+* Networking: Create new security group
+* Networking Configuration
+    * Type: All TCP
+    * Source: Anywhere
+* Load Balancing: Select Application Load Balancer (ALB).
+* ALB Configuration:
+* Create a new ALB:
+* Name: sports-api-alb
+* Target Group health check path: "/sports"
+* Create service
+
+4. Test the ALB:
+* After deploying the ECS service, note the DNS name of the ALB (e.g., sports-api-alb-<AWS_ACCOUNT_ID>.us-east-1.elb.amazonaws.com)
+
+* Confirm the API is accessible by visiting the ALB DNS name in your browser and adding /sports at end (e.g, http://sports-api-alb-<AWS_ACCOUNT_ID>.us-east-1.elb.amazonaws.com/sports)
+
