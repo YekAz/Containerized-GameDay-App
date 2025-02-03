@@ -38,7 +38,7 @@ Containerized-GameDay-App/
 # Setup Instructions
 ## Clone the Repository
 
-`git clone https://github.com/ifeanyiro9/containerized-sports-api.git`
+`git clone https://github.com/YekAz/Containerized-GameDay-App.git`
 
 ## Change directory into the clones repo
 
