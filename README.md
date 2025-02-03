@@ -109,3 +109,21 @@ Containerized-GameDay-App/
 
 * Confirm the API is accessible by visiting the ALB DNS name in your browser and adding /sports at end (e.g, http://sports-api-alb-<AWS_ACCOUNT_ID>.us-east-1.elb.amazonaws.com/sports)
 
+# Configure API Gateway
+1. Create a New REST API:
+* Go to API Gateway Console → Create API → REST API
+* Name the API (e.g., Sports API Gateway)
+
+2. Set Up Integration:
+* Create a resource /sports
+* Create a GET method
+* Choose HTTP Proxy as the integration type
+* Enter the DNS name of the ALB that includes "/sports" (e.g. http://sports-api-alb-<AWS_ACCOUNT_ID>.us-east-1.elb.amazonaws.com/sports)
+
+3. Deploy the API:
+* Deploy the API to a stage (e.g., prod)
+* Note the endpoint URL and test it to see if the application comes up.
+
+## What We Learned
+Setting up a scalable, containerized application with ECS Creating public APIs using API Gateway.
+
